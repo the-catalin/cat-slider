@@ -1,0 +1,526 @@
+<link rel="import" href="../polymer/polymer.html">
+
+<link rel="import" href="../cat-decorators/cat-decorator-runner-behavior.html">
+<link rel="import" href="../cat-decorators/decorators/cat-border.html">
+<link rel="import" href="../cat-decorators/decorators/cat-shadow.html">
+
+<link rel="import" href="../cat-animation/cat-animation-runner-behavior.html">
+<link rel="import" href="../cat-animation/animations/cat-fade-animation.html">
+<link rel="import" href="../cat-animation/animations/cat-slide-animation.html">
+<link rel="import" href="../cat-animation/animations/cat-scale-animation.html">
+
+<dom-module id="cat-slider">
+<style>
+    :host {
+        display: block;
+        width: 700px;
+        height: 300px;
+        position: relative;
+    }
+    * {
+        box-sizing: border-box;
+    }
+    ul {
+        overflow: hidden;
+        position: relative;
+        width: 100%;
+        height: 100%;
+        margin: 0;
+        padding: 0;
+        list-style: none;
+    }
+
+    li {
+        width: 100%;
+        height: 100%;
+        position: absolute;
+        top: 0;
+    }
+    cat-image {
+        width: 100%;
+        height: 100%;
+    }
+    #brdr {
+        height: 100%;
+        width: 100%;
+        position: absolute;
+        top: 0;
+        pointer-events: none;
+        z-index: 999997;
+    }
+
+    /*is mouse over trick*/
+    #arrows:hover {
+        border-style: hidden;
+    } 
+    
+    #arrows {
+        z-index: 999998;
+        height: 100%;
+        width: 100%;
+        position: absolute;
+        top: 0;
+        box-sizing: border-box;
+        padding: var(--cat-slider-arrows-padding);
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+    }
+    #arrows img {
+        cursor: pointer;
+    }
+    #prev {
+        
+    }
+    #next {
+        transform: scaleX(-1);
+    }
+    #bullets {
+        z-index: 999999;        
+        position: absolute;
+        left: 50%;
+        transform: translate(-50%, 0);
+        top: calc(100% + var(--cat-slider-bullets-offset));
+    }
+    .bullet {
+        width: var(--cat-slider-bullet-size);
+        height: var(--cat-slider-bullet-size);
+        border-radius: var(--cat-slider-bullet-size);
+        background-color: var(--cat-slider-bullet-color);
+        display: inline-block;
+        cursor: pointer;
+        margin-right: var(--cat-slider-bullet-spacing);
+    }
+    .bullet.selected {
+        background-color: var(--cat-slider-bullet-selected-color);
+    }
+    .bullet:last-of-type {
+        margin-right: 0;
+    }
+</style>
+
+<template>
+    <ul id="slider"></ul>
+    <div id="brdr"></div>
+    <div id="arrows">
+        <img id="prev" src="img/arrow.png">
+        <img id="next" src="img/arrow.png">
+    </div>
+    <div id="bullets"></div>
+</template>
+
+<script>
+
+;(function(){
+    
+'use strict';
+
+function dashedLowercase(str) {
+    return str.replace(/([a-z])([A-Z])/g, '$1-$2').toLowerCase();
+}
+
+function forEach(array, callback, scope) {
+    for (var i = 0; i < array.length; i++) {
+        callback.call(scope, array[i], i);
+    }
+}
+
+Polymer({
+    is: 'cat-slider',
+
+    behaviors: [
+        CatBehaviors.CatDecoratorRunnerBehavior,
+        CatBehaviors.CatAnimationRunnerBehavior
+    ],
+
+    properties: {
+
+        bulletSize:             { type: Number, value: 12},
+        bulletColor:            { type: String, value: 'rgba(170,170,170, 0.8)'},
+        bulletSelectedColor:    { type: String, value: 'rgba(43, 28, 33, 1)'},
+        bulletSpacing:          { type: Number, value: 4},
+        bulletsOffset:          { type: Number, value: 10},
+
+        // this is currently a private property and the user will have phisically rename
+        // the chosen image to arrow.png
+        // find a proper way to have a path relative to cat-slider path
+        _arrows:                { type: String, value: 'arrow.png'},
+        arrowsPadding:          { type: Number, value: 10},
+
+        /**
+         * Enable this in order to show the effects only when the mouse is over the image
+         */
+        showEffectsOnHover:     { type: Boolean, value: false },
+
+        /**
+         * Available options: fade, slide, scale (or combined, space delimited), random
+         */
+        imageTransitionType:     { type: String, value: 'random' },
+        /**
+         * Available options: center, left, right, top, bottom, random. 'center' is unavailable for imageTransitionType: slide
+         */
+        imageTransitionDirection:{ type: String, value: 'random' },
+        /**
+         * Easing function. Available options: ease, linear, ease-in, ease-out, ease-in-out
+         */
+        imageTransitionFunction: { type: String, value: 'ease' },
+        /**
+         * Easing duration, in seconds
+         */
+        imageTransitionDuration: { type: Number, value: 1 },        
+
+        /**
+         * Disable the photo effect that makes the image to slowly zoom
+         */
+        disableKenBurns:        { type: Boolean, value: false },
+        /**
+         * Ken Burns transition duration in seconds
+         */
+        transitionDuration:     { type: Number, value: 6 },
+        /**
+         * Ken Burns transition delay in seconds
+         */
+        transitionDelay:        { type: Number, value: 0 },
+        /**
+         * Zoom direction. Available options: in, out
+         */
+        kenBurnsZoomDirection:  { type: String, value: 'out' },
+        /**
+         * Point of origin for Ken Burns Effect. Available options:
+         * random, center, top-left, top-right, bottom-left, bottom-right
+         */
+        zoomOrigin:             { type: String, value: 'random' },
+        /**
+         * Zoom percentage for Ken Burns
+         */
+        zoomScale:              { type: Number, value: 10 },
+
+
+        /**
+         * Available options: fade, slide, scale (or combined, space delimited), none
+         */
+        textTransitionType:     { type: String, value: 'scale' },
+        /**
+         * Available options: center, left, right, top, bottom. 'center' is unavailable for textTransitionType: slide
+         */
+        textTransitionDirection: { type: String, value: 'center' },
+        /**
+         * Easing function. Available options: ease, linear, ease-in, ease-out, ease-in-out
+         */
+        textTransitionFunction: { type: String, value: 'ease' },
+        /**
+         * Easing duration, in seconds
+         */
+        textTransitionDuration: { type: Number, value: 1 },        
+        /**
+         * Delay (in seconds) between multiple text appearances
+         */
+        textTransitionDelay:    { type: Number, value: 0.3 },
+        /**
+         * The horizontal position of the text.
+         * Available options: random, center, left, right
+         */
+        horizontalTextPosition: { type: String, value: 'random' },
+        /**
+         * The vertical position of the text.
+         * Available options: random, center, top, bottom
+         */
+        verticalTextPosition:   { type: String, value: 'random' },
+        /**
+         * Text padding in pixels
+         */
+        textPadding:            { type: Number, value: 20 },
+        /**
+         * Space between cat-text elements
+         */
+        textSpacing:            { type: Number, value: 10},
+        /**
+         * Distance in percentage for slide effect.
+         * Available only for Transition type: slide
+         */
+        slideOffset:            { type: Number, value: 100 },
+
+        /**
+         * Show slider border
+         */
+        useSliderBorder:     { type: Boolean, value: false},
+        /**
+         * Width of the border in pixels
+         */
+        sliderBorderWidth:       { type: Number, value: 5},
+        /**
+         * Which sides to apply the border to. Available options: all, top, right, bottom, left
+         */
+        sliderBorderSides:       { type: String, value: 'all'},
+        /**
+         * Radius of the border in pixels
+         */
+        sliderBorderRadius:      { type: Number, value: 0},
+        /**
+         * Color of the border. RGB(A) or HEX
+         */
+        sliderBorderColor:       { type: String, value: 'rgba(119, 119, 119, 1)'},
+        /**
+         * Whether the border is outside or inside the slider
+         */
+        borderOutsideSlider:     { type: Boolean, value: false},
+                
+
+        /**
+         * Show accordion shadow
+         */
+        disableSliderShadow:      { type: Boolean, value: false},
+        /**
+         * The width of the shadow
+         */
+        sliderShadowWidth:        { type: Number, value: -50},
+        /**
+        * The offset of the shadow
+        */       
+        sliderShadowOffset:       { type: Number, value: 15},
+        /**
+         * The color of the shadow
+         */
+        sliderShadowColor:        { type: String, value: 'rgba(0,0,0,0.2)'}
+    },
+
+    CatTextProperties: [
+        'textTransitionType',
+        'textTransitionDirection',
+        'textTransitionFunction',
+        'textTransitionDuration',
+        'slideOffset'
+    ],
+
+    CatImageProperties: [
+        'showEffectsOnHover',
+        'disableKenBurns',
+        'kenBurnsZoomDirection',
+        'transitionDuration',
+        'transitionDelay',
+        'zoomOrigin',
+        'zoomScale',
+        'textPadding',
+        'horizontalTextPosition',
+        'verticalTextPosition',
+        'textTransitionDelay',
+        'textSpacing'
+    ],
+
+    _applyBundledProperties: function(el) {
+        var i, len, key, dashedOriginal;
+        for (i = 0, len = this.CatImageProperties.length; i < len; i++) {
+            dashedOriginal = dashedLowercase(this.CatImageProperties[i]);
+            if (! el.hasAttribute(dashedOriginal) && this[this.CatImageProperties[i]] !== false) {
+                el.setAttribute(dashedOriginal, this[this.CatImageProperties[i]]);
+            }
+        }
+        for (i = 0, len = this.CatTextProperties.length; i < len; i++) {
+            dashedOriginal = dashedLowercase(this.CatTextProperties[i]);
+            if (! el.hasAttribute(dashedOriginal) && this[this.CatTextProperties[i]] !== false) {
+                el.setAttribute(dashedOriginal, this[this.CatTextProperties[i]]);
+            }
+        }
+        el.setAttribute('manual-mode', '');
+    },
+
+    _appendImageChildren: function() {
+        //append cat-image child elements to #slider div
+        this._lightDom = Polymer.dom(this).children;
+
+        for (var i = 0; i < this._lightDom.length; i++) {
+            this._applyBundledProperties(this._lightDom[i]);
+            var li = document.createElement('li');
+            li.appendChild(this._lightDom[i]);
+            Polymer.dom(this.$.slider).appendChild(li);
+        }
+
+        this.lis = Polymer.dom(this.$.slider).querySelectorAll('li');
+        this.zIndex = 1;
+        
+        var first = this.lis[0];
+
+        first.style.zIndex = 1;
+        if (!this.showEffectsOnHover) {
+            first.querySelector('cat-image').showInfoText();
+            first.querySelector('cat-image').showKenBurns();
+        }
+        this.previousSlide = 0;
+        this.currentSlide = 0;
+
+        this.numberOfSlides = this.lis.length;
+    },    
+
+    _appendBullets: function() {
+        forEach(this.lis, function(li, i) {
+            var bullet = document.createElement('div');
+            bullet.className = 'bullet';
+            Polymer.dom(this.$.bullets).appendChild(bullet);
+
+            var self = this;
+            bullet.addEventListener('click', function(e) {
+                if (self.currentSlide !== i) {
+                    self.currentSlide = i;
+                    self.transitionToSlide(self.currentSlide);
+                }
+            });
+        }, this);
+
+        this.$.bullets.querySelectorAll('.bullet')[0].className += ' selected';
+    },
+
+    _initialStyleSetup: function() {
+        this.computedStyles = {};
+
+        this.computedStyles.width = getComputedStyle(this).width;
+        this.computedStyles.height = getComputedStyle(this).height;
+        this.computedStyles.narrow = this.narrowedImagesWidth + 'px';
+
+        this.customStyle['--cat-slider-bullet-color'] = this.bulletColor;
+        this.customStyle['--cat-slider-bullet-selected-color'] = this.bulletSelectedColor;
+        this.customStyle['--cat-slider-bullet-spacing'] = this.bulletSpacing + 'px';
+        this.customStyle['--cat-slider-bullets-offset'] = this.bulletsOffset + 'px';
+        this.customStyle['--cat-slider-bullet-size'] = this.bulletSize + 'px';
+        this.customStyle['--cat-slider-arrows-padding'] = this.arrowsPadding + 'px';
+
+        if (this._arrows !== 'arrow.png') {
+            this.$.next.setAttribute('src', '../img/' + this._arrows);
+            this.$.prev.setAttribute('src', '../img/' + this._arrows);
+        }
+       
+        // var lis, catImages, i, len, border;
+
+        if (this.useSliderBorder) {
+            this.addDecorator({
+                name: 'cat-border',
+                node: (this.borderOutsideSlider ? this : this.$.brdr),
+                color: this.sliderBorderColor,
+                width: this.sliderBorderWidth,
+                side: this.sliderBorderSides,
+                radius: this.sliderBorderRadius
+            });
+        }
+
+        if (!this.disableSliderShadow) {
+            this.addDecorator({
+                name: 'cat-shadow',
+                node: this,
+                blur: 15,
+                spread: this.sliderShadowWidth,
+                horizontalWidth: 0,
+                verticalWidth:  this.sliderShadowOffset - this.sliderShadowWidth,
+                color: this.sliderShadowColor
+            });
+        }
+
+        this.updateStyles();
+    },
+
+    _attachListeners: function() {
+        this.listen(this.$.prev, 'tap', '_onPrevTap');
+        this.listen(this.$.next, 'tap', '_onNextTap');
+
+        // _onMouseEnter and _onMouseLeave from cat-image are no longer triggered
+        // because cat-slider was intentionally covered by #arrows div due to the fact
+        // that 'mouseenter' and 'mouseleave' events do not fire when an element slides
+        // over an area where mouse is still
+        // For this reason, showEffectsOnHover functionality is partially rebuilt here
+        if (this.showEffectsOnHover) {
+            this.listen(this.$.arrows, 'mouseenter', '_onMouseEnter');
+            this.listen(this.$.arrows, 'mouseleave', '_onMouseLeave');
+        }
+    },
+
+    _onMouseEnter: function() {
+        this.mouseIsOver = true;
+        this.lis[this.currentSlide].querySelector('cat-image').showInfoText();
+        this.lis[this.currentSlide].querySelector('cat-image').showKenBurns();
+    },
+    _onMouseLeave: function() {
+        this.mouseIsOver = false;
+        this.lis[this.currentSlide].querySelector('cat-image').hideInfoText();
+        this.lis[this.currentSlide].querySelector('cat-image').hideKenBurns();
+    },
+
+    _onPrevTap: function() {
+        this.goPrev();
+    },
+
+    _onNextTap: function() {
+        this.goNext();
+    },
+
+    goPrev: function() {
+        this.currentSlide--;
+        if (this.currentSlide === -1) {
+            this.currentSlide = this.numberOfSlides - 1;
+        }
+        this.transitionToSlide(this.currentSlide);
+    },
+    goNext: function() {
+        this.currentSlide++;
+        if (this.currentSlide === this.numberOfSlides) {
+            this.currentSlide = 0;
+        }
+        this.transitionToSlide(this.currentSlide);
+    },
+
+    attached: function() {
+        this._appendImageChildren();
+        this._appendBullets();
+
+        this._initialStyleSetup();
+        this._attachListeners();
+
+        var self = this;
+    },
+
+    transitionToSlide: function(toSlide) {
+        var transitionType;
+        if (this.imageTransitionType === 'random') {
+            transitionType = ['fade', 'slide', 'scale'][Math.floor(Math.random() * 3)];
+            transitionType = 'cat-' + transitionType + '-animation';
+        } else {
+            transitionType = 'cat-' + this.imageTransitionType + '-animation';
+        }
+
+        this.clearAnimation('sliderAnimation');
+
+        this.addAnimation('sliderAnimation', {
+            name: transitionType,
+            node: this.lis[toSlide],
+            direction: this.imageTransitionDirection,
+            function: this.imageTransitionFunction,
+            duration: this.imageTransitionDuration,
+            reverse: false,
+            done: function() {
+
+                var previousCatImage = this.lis[this.previousSlide].querySelector('cat-image'),
+                    toCatImage = this.lis[toSlide].querySelector('cat-image');
+
+                    previousCatImage.hideKenBurns();
+                    previousCatImage.hideInfoText();
+
+                if (!this.showEffectsOnHover || (this.showEffectsOnHover && this.mouseIsOver)) {
+                    toCatImage.showKenBurns();
+                    toCatImage.showInfoText();
+                }
+                
+                this.previousSlide = toSlide;
+            }
+        });
+
+        this.play('sliderAnimation');
+
+        this.zIndex++;
+        this.lis[toSlide].style.zIndex = this.zIndex;
+
+        this.$.bullets.querySelector('.bullet.selected').classList.remove('selected');
+        this.$.bullets.querySelectorAll('.bullet')[toSlide].className += ' selected';
+    }
+});
+
+})(); //end siaf
+</script>
+
+</dom-module>

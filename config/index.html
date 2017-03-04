@@ -1,0 +1,78 @@
+<!doctype html>
+<html>
+<head>
+	<title>cat-slider</title>
+
+	<script src="../../webcomponentsjs/webcomponents.min.js"></script>
+
+	<link rel="import" href="../cat-slider.html">
+	<link rel="import" href="../../cat-image/cat-image.html">
+	<link rel="import" href="../../cat-text/cat-text.html">
+	<link rel="import" href="../../cat-config-panel/cat-config-panel.html">
+
+	<style>
+		body {
+			padding-top: 20px !important;
+		}
+		cat-slider {
+			margin-left: 30px;
+			margin-bottom: 40px;
+	    }
+	    cat-image cat-text {
+	    	display: none;
+	    }
+	</style>
+
+</head>
+<body>
+
+	<cat-config-panel source-file="../cat-slider.json"></cat-config-panel>
+
+	<script src="../../cat-config-panel/connecter.js"></script>
+
+	<script>
+		var componentName = 'cat-slider',
+			styleObj = {
+				'cat-slider': {
+					width: 700,
+					height: 300
+				},
+				'cat-text': {
+					backgroundColor: 'rgba(255,255,230,0.7)',
+			    	borderRadius: 4,
+		            padding: 10,
+		            color: 'rgba(43, 28, 33, 1)',
+			    	fontFamily: 'Oswald',
+			    	fontWeight: 300,
+			    	fontSize: 22
+				}				
+			},
+			componentString = '<cat-slider>' +
+				'<cat-image src="http://webcomponents.online/images/01.jpg">' +
+					'<cat-text> Sample text </cat-text>' +
+					'<cat-text> Another sample text </cat-text>' +
+				'</cat-image>' +
+				'<cat-image src="http://webcomponents.online/images/02.jpg">' +
+					'<cat-text> Sample text </cat-text>' +
+					'<cat-text> Another sample text </cat-text>' +
+				'</cat-image>' +
+				'<cat-image src="http://webcomponents.online/images/03.jpg">' +
+					'<cat-text> Sample text </cat-text>' +
+					'<cat-text> Another sample text </cat-text>' +
+				'</cat-image>' +
+				'<cat-image src="http://webcomponents.online/images/04.jpg">' +
+					'<cat-text> Sample text </cat-text>' +
+					'<cat-text> Another sample text </cat-text>' +
+				'</cat-image>' +
+				'<cat-image src="http://webcomponents.online/images/05.jpg">' +
+					'<cat-text> Sample text </cat-text>' +
+					'<cat-text> Another sample text </cat-text>' +
+				'</cat-image>' +
+			'</cat-slider>';
+
+		connectComponentWithConfigPanel(componentName, styleObj, componentString);
+		
+	</script>
+	
+</body>
+</html>

@@ -1,0 +1,373 @@
+[{
+    "tabName": "Settings",
+    "iconClass": "fa fa-gear",
+    "type": "controlsWithSubtabs",
+    "subtabs": [{
+        "subtabName": "Global Properties",
+        "iconClass": "fa-globe",
+        "controls": [{
+            "name": "Slider Width",
+            "id": "width",
+            "type": "numeric-input",
+            "min": 200,
+            "max": 1200,
+            "step": 1,
+            "css": "cat-slider"
+        }, {
+            "name": "Slider Height",
+            "id": "height",
+            "type": "numeric-input",
+            "min": 200,
+            "max": 800,
+            "step": 1,
+            "css": "cat-slider"
+        }, {
+            "name": "Show Effects On Hover",
+            "id": "showEffectsOnHover",
+            "type": "toggle",
+            "tip": "Show effects (ken burns and text appearance) only when the mouse is over the image"
+        }, {
+            "name": "Prev/Next Arrows",
+            "id": "_arrows",
+            "type": "dropdown",
+            "options": ["arrow.png", "arrow2.png", "arrow3.png", "arrow4.png", "arrow5.png"]
+        }, {
+            "name": "Arrows Padding",
+            "id": "arrowsPadding",
+            "type": "numeric-input",
+            "min": 0,
+            "max": 50,
+            "step": 1
+        }]
+    }, {
+        "subtabName": "Image Transition",
+        "controls":[{
+            "name": "Transition Type",
+            "id": "imageTransitionType",
+            "type": "dropdown",
+            "options": ["random", "fade", "scale", "slide"]
+        }, {
+            "name": "Transition Direction",
+            "id": "imageTransitionDirection",
+            "type": "dropdown",
+            "options": ["random", "center", "left", "right", "top", "bottom"]
+        }, {
+            "name": "Transition Function",
+            "id": "imageTransitionFunction",
+            "type": "dropdown",
+            "options": ["ease", "linear", "ease-in", "ease-out", "ease-in-out"]
+        }, {
+            "name": "Transition Duration",
+            "id": "imageTransitionDuration",
+            "type": "numeric-input",
+            "min": 0,
+            "max": 5,
+            "step": 0.1
+        }]
+    }, {
+        "subtabName": "Ken Burns Effect",
+        "iconClass": "fa-globe",
+        "controls": [{
+            "name": "Disable Ken Burns",
+            "id": "disableKenBurns",
+            "type": "toggle",
+            "tip": "Disable the photo effect that makes the image to slowly zoom"
+        }, {
+            "name": "Transition Duration",
+            "id": "transitionDuration",
+            "type": "numeric-input",
+            "min": 0,
+            "max": 20,
+            "step": 0.1,
+            "tip": "Ken Bunrs transition duration in seconds"
+        }, {
+            "name": "Transition Delay",
+            "id": "transitionDelay",
+            "type": "numeric-input",
+            "min": 0,
+            "max": 10,
+            "step": 0.1,
+            "tip": "Ken Bunrs transition delay in seconds"
+        }, {
+            "name": "Ken Burns Zoom",
+            "id": "kenBurnsZoomDirection",
+            "type": "dropdown",
+            "options": ["in", "out"],
+            "tip": "Zoom direction"
+        }, {
+            "name": "Zoom Origin",
+            "id": "zoomOrigin",
+            "type": "dropdown",
+            "options": ["random", "center", "top-left", "top-right", "bottom-left", "bottom-right"],
+            "tip": "Point of origin for Ken Burns effect"
+        }, {
+            "name": "Zoom Scale",
+            "id": "zoomScale",
+            "type": "numeric-input",
+            "min": 0,
+            "max": 100,
+            "step": 1,
+            "tip": "Zoom percentage for Ken Burns"
+        }]
+    }, {
+        "subtabName": "Text Animation",
+        "iconClass": "fa-square-o",
+        "controls": [{
+            "name": "Transition Type",
+            "id": "textTransitionType",
+            "type": "dropdown",
+            "options": ["fade", "scale", "slide"]
+        }, {
+            "name": "Transition Direction",
+            "id": "textTransitionDirection",
+            "type": "dropdown",
+            "options": ["center", "left", "right", "top", "bottom"]
+        }, {
+            "name": "Transition Function",
+            "id": "textTransitionFunction",
+            "type": "dropdown",
+            "options": ["ease", "linear", "ease-in", "ease-out", "ease-in-out"]
+        }, {
+            "name": "Transition Duration",
+            "id": "textTransitionDuration",
+            "type": "numeric-input",
+            "min": 0,
+            "max": 5,
+            "step": 0.1
+        }, {
+            "name": "Transition Delay",
+            "id": "textTransitionDelay",
+            "type": "numeric-input",
+            "min": 0,
+            "max": 2,
+            "step": 0.1,
+            "tip": "Delay between multiple text appearances"
+        }, {
+            "name": "Slide Offset",
+            "id": "slideOffset",
+            "type": "numeric-input",
+            "min": 0,
+            "max": 200,
+            "step": 1,
+            "tip": "Percentage offset. Available only for Transiton Type: slide"
+        }]
+    }, {
+        "subtabName": "Text Style",
+        "controls": [{
+            "name": "Horizontal Text Pos",
+            "id": "horizontalTextPosition",
+            "type": "dropdown",
+            "options": ["random", "center", "left", "right"]
+        }, {
+            "name": "Vertical Text Pos",
+            "id": "verticalTextPosition",
+            "type": "dropdown",
+            "options": ["random", "center", "top", "bottom"]
+        }, {
+            "name": "Text Padding",
+            "id": "textPadding",
+            "type": "numeric-input",
+            "min": 0,
+            "max": 50,
+            "step": 1
+        }, {
+            "name": "Text Spacing",
+            "id": "textSpacing",
+            "type": "numeric-input",
+            "min": 0,
+            "max": 100,
+            "step": 1,
+            "tip": "Space between cat-text elements"
+        }, {
+            "name": "Background Color",
+            "id": "backgroundColor",
+            "type": "color",
+            "css": "cat-text"
+        }, {
+            "name": "Background Padding",
+            "id": "padding",
+            "type": "numeric-input",
+            "min": 0,
+            "max": 20,
+            "step": 1,
+            "css": "cat-text"
+        }, {
+            "name": "Border Radius",
+            "id": "borderRadius",
+            "type": "numeric-input",
+            "min": 0,
+            "max": 10,
+            "step": 1,
+            "css": "cat-text"
+        }, {
+            "name": "Border Style",
+            "id": "borderStyle",
+            "type": "dropdown",
+            "options": ["none", "solid", "dotted", "dashed"],
+            "css": "cat-text"
+        }, {
+            "name": "Border Width",
+            "id": "borderWidth",
+            "type": "numeric-input",
+            "min": 0,
+            "max": 10,
+            "step": 1,
+            "css": "cat-text"
+        }, {
+            "name": "Border Color",
+            "id": "borderColor",
+            "type": "color",
+            "css": "cat-text"
+        }, {
+            "name": "Font Size",
+            "id": "fontSize",
+            "type": "numeric-input",
+            "min": 8,
+            "max": 50,
+            "step": 1,
+            "css": "cat-text"
+        }, {
+            "name": "Color",
+            "id": "color",
+            "type": "color",
+            "css": "cat-text"
+        }, {
+            "name": "Font Family",
+            "id": "fontFamily",
+            "type": "dropdown",
+            "options": ["Open Sans", "Lato", "Raleway", "Roboto", "Oswald", "Roboto Condensed", "PT Sans", "Baloo", "Open Sans Condensed", "Indie Flower", "Abel"],
+            "tip": "Note that some fonts go only with specific font weights",
+            "css": "cat-text"
+        }, {
+            "name": "Font Weight",
+            "id": "fontWeight",
+            "type": "numeric-input",
+            "min": 100,
+            "max": 900,
+            "step": 100,
+            "css": "cat-text"
+        }]
+    }, {
+        "subtabName": "Border Properties",
+        "iconClass": "fa-globe",
+        "controls": [{
+            "name": "Use Slider Border",
+            "id": "useSliderBorder",
+            "type": "toggle"
+        }, {
+            "name": "Slider Border Width",
+            "id": "sliderBorderWidth",
+            "type": "numeric-input",
+            "min": 0,
+            "max": 20,
+            "step": 1
+        }, {
+            "name": "Slider Border Sides",
+            "id": "sliderBorderSides",
+            "type": "dropdown",
+            "options": ["all", "top", "right", "bottom", "left"],
+            "tip": "Which sides to apply the border to"
+        }, {
+            "name": "Slider Border Radius",
+            "id": "sliderBorderRadius",
+            "type": "dropdown",
+            "type": "numeric-input",
+            "min": 0,
+            "max": 20,
+            "step": 1
+        }, {
+            "name": "Slider Border Color",
+            "id": "sliderBorderColor",
+            "type": "color"
+        }, {
+            "name": "Border Outside Slider",
+            "id": "borderOutsideSlider",
+            "type": "toggle",
+            "tip": "Check this to have the border outside the image, not inside"
+        }]
+    }, {
+        "subtabName": "Shadow Properties",
+        "iconClass": "fa-globe",
+        "controls": [{
+            "name": "Disable Slider Shadow",
+            "id": "disableSliderShadow",
+            "type": "toggle"
+        }, {
+            "name": "Slider Shadow Width",
+            "id": "sliderShadowWidth",
+            "type": "numeric-input",
+            "min": -200,
+            "max": 50,
+            "step": 1
+        }, {
+            "name": "Slider Shadow Offset",
+            "id": "sliderShadowOffset",
+            "type": "numeric-input",
+            "min": 0,
+            "max": 50,
+            "step": 1
+        }, {
+            "name": "Slider Shadow Color",
+            "id": "sliderShadowColor",
+            "type": "color"
+        }]
+    }, {
+        "subtabName": "Bullets",
+        "iconClass": "fa-globe",
+        "controls": [{
+            "name": "Bullet Size",
+            "id": "bulletSize",
+            "type": "numeric-input",
+            "min": 4,
+            "max": 30,
+            "step": 1
+        }, {
+            "name": "Bullet Color",
+            "id": "bulletColor",
+            "type": "color"
+        }, {
+            "name": "Selected Bullet Color",
+            "id": "bulletSelectedColor",
+            "type": "color"
+        }, {
+            "name": "Bullet Spacing",
+            "id": "bulletSpacing",
+            "type": "numeric-input",
+            "min": 0,
+            "max": 20,
+            "step": 1
+        }, {
+            "name": "Bullets Offset",
+            "id": "bulletsOffset",
+            "type": "numeric-input",
+            "min": -100,
+            "max": 100,
+            "step": 1
+        }]
+    }]
+    
+}, {
+    "tabName": "Publish",
+    "iconClass": "fa fa-paper-plane",
+    "type": "genericContent"
+}, {
+    "limits" : [{
+        "master": "textTransitionType",
+        "slave": ["textTransitionDirection"],
+        "disabled": ["fade"]
+    }, {
+        "master": "textTransitionType",
+        "slave": ["slideOffset"],
+        "disabled": ["fade", "scale"]
+    }, {
+        "master": "disableKenBurns",
+        "slave": ["transitionDuration", "transitionDelay", "kenBurnsZoomDirection", "zoomOrigin", "zoomScale"]
+    }, {
+        "master": "useAccordionBorder",
+        "slave": ["accordionBorderWidth", "accordionBorderSides", "accordionBorderRadius", "accordionBorderColor", "borderOutsideAccordion"],
+        "reverse": true
+    }, {
+        "master": "disableAccordionShadow",
+        "slave": ["accordionShadowWidth", "accordionShadowOffset", "accordionShadowColor"]
+    }]
+}]

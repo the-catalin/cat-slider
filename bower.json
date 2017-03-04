@@ -1,0 +1,39 @@
+{
+  "name": "cat-slider",
+  "version": "0.7.0",
+  "description": "Displays a slider with different possible effects",
+  "authors": [
+    "Catalin Ungureanu <catalinungureanu@gmail.com>"
+  ],
+  "keywords": [
+    "web-components",
+    "polymer",
+    "slider",
+    "image",
+    "ken burns",
+    "text",
+    "effect"
+  ],
+  "main": "cat-slider.html",
+  "license": "MIT",
+  "homepage": "https://github.com/the-catalin/cat-slider",
+  "ignore": [
+    "**/.*",
+    "node_modules",
+    "bower_components",
+    "test",
+    "tests"
+  ],
+  "dependencies": {
+    "polymer": "^1.7.0",
+    "cat-image": "the-catalin/cat-image#^0.8.4",
+    "cat-decorators": "the-catalin/cat-decorators#^0.8.1",
+    "cat-animation": "the-catalin/cat-animation#^0.8.5"
+  },
+  "devDependencies": {
+    "iron-component-page": "PolymerElements/iron-component-page#^1.1.7",
+    "iron-demo-helpers": "PolymerElements/iron-demo-helpers#^1.2.5",
+    "web-component-tester": "^6.0.0",
+    "webcomponentsjs": "webcomponents/webcomponentsjs#^0.7.0"
+  }
+}
