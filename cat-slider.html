@@ -4,10 +4,17 @@
 <link rel="import" href="../cat-decorators/decorators/cat-border.html">
 <link rel="import" href="../cat-decorators/decorators/cat-shadow.html">
 
-<link rel="import" href="../cat-animation/cat-animation-runner-behavior.html">
-<link rel="import" href="../cat-animation/animations/cat-fade-animation.html">
-<link rel="import" href="../cat-animation/animations/cat-slide-animation.html">
-<link rel="import" href="../cat-animation/animations/cat-scale-animation.html">
+<link rel="import" href="../cat-transitions/cat-transitions-runner-behavior.html">
+<link rel="import" href="../cat-transitions/transitions/slide-from-left.html">
+<link rel="import" href="../cat-transitions/transitions/slide-from-right.html">
+<link rel="import" href="../cat-transitions/transitions/slide-from-top.html">
+<link rel="import" href="../cat-transitions/transitions/slide-from-bottom.html">
+<link rel="import" href="../cat-transitions/transitions/scale-from-center.html">
+<link rel="import" href="../cat-transitions/transitions/scale-from-left.html">
+<link rel="import" href="../cat-transitions/transitions/scale-from-right.html">
+<link rel="import" href="../cat-transitions/transitions/scale-from-top.html">
+<link rel="import" href="../cat-transitions/transitions/scale-from-bottom.html">
+<link rel="import" href="../cat-transitions/transitions/fade-in.html">
 
 <dom-module id="cat-slider">
 <style>
@@ -125,12 +132,25 @@ function forEach(array, callback, scope) {
     }
 }
 
+var availableTransitions = [
+    "fade-in",
+    "slide-from-left",
+    "slide-from-right",
+    "slide-from-top",
+    "slide-from-bottom",
+    "scale-from-center",
+    "scale-from-left",
+    "scale-from-right",
+    "scale-from-top",
+    "scale-from-bottom"
+];
+
 Polymer({
     is: 'cat-slider',
 
     behaviors: [
         CatBehaviors.CatDecoratorRunnerBehavior,
-        CatBehaviors.CatAnimationRunnerBehavior
+        CatBehaviors.CatTransitionsRunnerBehavior
     ],
 
     properties: {
@@ -145,6 +165,7 @@ Polymer({
         // the chosen image to arrow.png
         // find a proper way to have a path relative to cat-slider path
         _arrows:                { type: String, value: 'arrow.png'},
+
         arrowsPadding:          { type: Number, value: 10},
 
         /**
@@ -152,14 +173,10 @@ Polymer({
          */
         showEffectsOnHover:     { type: Boolean, value: false },
 
-        /**
-         * Available options: fade, slide, scale (or combined, space delimited), random
-         */
-        imageTransitionType:     { type: String, value: 'random' },
-        /**
-         * Available options: center, left, right, top, bottom, random. 'center' is unavailable for imageTransitionType: slide
-         */
-        imageTransitionDirection:{ type: String, value: 'random' },
+        imageTransitionName:    { type: String, value: 'random'},
+
+        disableSecondaryAnimation: {type: Boolean, value: false},
+        
         /**
          * Easing function. Available options: ease, linear, ease-in, ease-out, ease-in-out
          */
@@ -388,8 +405,6 @@ Polymer({
             this.$.prev.setAttribute('src', '../img/' + this._arrows);
         }
        
-        // var lis, catImages, i, len, border;
-
         if (this.useSliderBorder) {
             this.addDecorator({
                 name: 'cat-border',
@@ -451,18 +466,22 @@ Polymer({
     },
 
     goPrev: function() {
-        this.currentSlide--;
-        if (this.currentSlide === -1) {
-            this.currentSlide = this.numberOfSlides - 1;
+        if (!this.inTransitioning || this.disableSecondaryAnimation) {
+            this.currentSlide--;
+            if (this.currentSlide === -1) {
+                this.currentSlide = this.numberOfSlides - 1;
+            }
+            this.transitionToSlide(this.currentSlide);            
         }
-        this.transitionToSlide(this.currentSlide);
     },
     goNext: function() {
-        this.currentSlide++;
-        if (this.currentSlide === this.numberOfSlides) {
-            this.currentSlide = 0;
+        if (!this.inTransitioning || this.disableSecondaryAnimation) {
+            this.currentSlide++;
+            if (this.currentSlide === this.numberOfSlides) {
+                this.currentSlide = 0;
+            }
+            this.transitionToSlide(this.currentSlide);            
         }
-        this.transitionToSlide(this.currentSlide);
     },
 
     attached: function() {
@@ -476,26 +495,27 @@ Polymer({
     },
 
     transitionToSlide: function(toSlide) {
-        var transitionType;
-        if (this.imageTransitionType === 'random') {
-            transitionType = ['fade', 'slide', 'scale'][Math.floor(Math.random() * 3)];
-            transitionType = 'cat-' + transitionType + '-animation';
+        
+        var previousBuffer = this.previousSlide;
+
+        this.inTransitioning = true;
+
+        var transition;
+        if (this.imageTransitionName === 'random') {
+            transition = availableTransitions[Math.floor(Math.random() * availableTransitions.length)];
         } else {
-            transitionType = 'cat-' + this.imageTransitionType + '-animation';
+            transition = this.imageTransitionName;
         }
-
-        this.clearAnimation('sliderAnimation');
-
-        this.addAnimation('sliderAnimation', {
-            name: transitionType,
-            node: this.lis[toSlide],
-            direction: this.imageTransitionDirection,
+        
+        this.addTransition({
+            name: transition,
+            toNode: this.lis[toSlide],
+            fromNode: this.lis[this.previousSlide],
             function: this.imageTransitionFunction,
             duration: this.imageTransitionDuration,
-            reverse: false,
             done: function() {
 
-                var previousCatImage = this.lis[this.previousSlide].querySelector('cat-image'),
+                var previousCatImage = this.lis[previousBuffer].querySelector('cat-image'),
                     toCatImage = this.lis[toSlide].querySelector('cat-image');
 
                     previousCatImage.hideKenBurns();
@@ -505,18 +525,21 @@ Polymer({
                     toCatImage.showKenBurns();
                     toCatImage.showInfoText();
                 }
-                
-                this.previousSlide = toSlide;
-            }
-        });
 
-        this.play('sliderAnimation');
+                this.inTransitioning = false;
+
+            },
+            secondaryAnimation: !this.disableSecondaryAnimation
+        });
+        
+        this.previousSlide = toSlide;
 
         this.zIndex++;
         this.lis[toSlide].style.zIndex = this.zIndex;
 
         this.$.bullets.querySelector('.bullet.selected').classList.remove('selected');
         this.$.bullets.querySelectorAll('.bullet')[toSlide].className += ' selected';
+
     }
 });
 

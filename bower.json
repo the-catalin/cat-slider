@@ -1,6 +1,6 @@
 {
   "name": "cat-slider",
-  "version": "0.7.0",
+  "version": "0.7.1",
   "description": "Displays a slider with different possible effects",
   "authors": [
     "Catalin Ungureanu <catalinungureanu@gmail.com>"
@@ -28,7 +28,7 @@
     "polymer": "^1.7.0",
     "cat-image": "the-catalin/cat-image#^0.8.4",
     "cat-decorators": "the-catalin/cat-decorators#^0.8.1",
-    "cat-animation": "the-catalin/cat-animation#^0.8.5"
+    "cat-transitions": "the-catalin/cat-transitions#^0.7.0"
   },
   "devDependencies": {
     "iron-component-page": "PolymerElements/iron-component-page#^1.1.7",

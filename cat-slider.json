@@ -42,15 +42,27 @@
     }, {
         "subtabName": "Image Transition",
         "controls":[{
-            "name": "Transition Type",
-            "id": "imageTransitionType",
+            "name": "Transition",
+            "id": "imageTransitionName",
             "type": "dropdown",
-            "options": ["random", "fade", "scale", "slide"]
+            "options": [
+                "random",
+                "fade-in",
+                "slide-from-left",
+                "slide-from-right",
+                "slide-from-top",
+                "slide-from-bottom",
+                "scale-from-center",
+                "scale-from-left",
+                "scale-from-right",
+                "scale-from-top",
+                "scale-from-bottom"
+            ]
         }, {
-            "name": "Transition Direction",
-            "id": "imageTransitionDirection",
-            "type": "dropdown",
-            "options": ["random", "center", "left", "right", "top", "bottom"]
+            "name": "Disable Secondary Animation",
+            "id": "disableSecondaryAnimation",
+            "type": "toggle",
+            "tip": "When available, disables the animation of the slide that goes out"
         }, {
             "name": "Transition Function",
             "id": "imageTransitionFunction",
