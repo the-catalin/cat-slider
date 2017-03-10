@@ -17,6 +17,8 @@
 		cat-slider {
 			margin-left: 30px;
 			margin-bottom: 40px;
+			margin-left: auto;
+			margin-right: auto;
 	    }
 	    cat-image cat-text {
 	    	display: none;
@@ -31,7 +33,14 @@
 	<script src="../../cat-config-panel/connecter.js"></script>
 
 	<script>
-		var componentName = 'cat-slider',
+		var includes =
+			'<script src="bower_components/webcomponentsjs/webcomponents-lite.min.js"><\/script>\n' + 
+			'<link rel="import" href="bower_components/cat-slider/cat-slider.html">\n' +
+			'<link rel="import" href="bower_components/cat-image/cat-image.html">\n' +
+			'<link rel="import" href="bower_components/cat-text/cat-text.html">\n',
+
+			componentName = 'cat-slider',
+			
 			styleObj = {
 				'cat-slider': {
 					width: 700,
@@ -47,30 +56,32 @@
 			    	fontSize: 22
 				}				
 			},
-			componentString = '<cat-slider>' +
-				'<cat-image src="http://webcomponents.online/images/01.jpg">' +
-					'<cat-text> Sample text </cat-text>' +
-					'<cat-text> Another sample text </cat-text>' +
-				'</cat-image>' +
-				'<cat-image src="http://webcomponents.online/images/02.jpg">' +
-					'<cat-text> Sample text </cat-text>' +
-					'<cat-text> Another sample text </cat-text>' +
-				'</cat-image>' +
-				'<cat-image src="http://webcomponents.online/images/03.jpg">' +
-					'<cat-text> Sample text </cat-text>' +
-					'<cat-text> Another sample text </cat-text>' +
-				'</cat-image>' +
-				'<cat-image src="http://webcomponents.online/images/04.jpg">' +
-					'<cat-text> Sample text </cat-text>' +
-					'<cat-text> Another sample text </cat-text>' +
-				'</cat-image>' +
-				'<cat-image src="http://webcomponents.online/images/05.jpg">' +
-					'<cat-text> Sample text </cat-text>' +
-					'<cat-text> Another sample text </cat-text>' +
-				'</cat-image>' +
+			
+			componentString = 
+			'<cat-slider>\n' +
+			'    <cat-image src="http://webcomponents.online/images/01.jpg">\n' +
+			'        <cat-text> Sample text </cat-text>\n' +
+			'        <cat-text> Another sample text </cat-text>\n' +
+			'    </cat-image>\n' +
+			'    <cat-image src="http://webcomponents.online/images/02.jpg">\n' +
+			'        <cat-text> Sample text </cat-text>\n' +
+			'        <cat-text> Another sample text </cat-text>\n' +
+			'    </cat-image>\n' +
+			'    <cat-image src="http://webcomponents.online/images/03.jpg">\n' +
+			'        <cat-text> Sample text </cat-text>\n' +
+			'        <cat-text> Another sample text </cat-text>\n' +
+			'    </cat-image>\n' +
+			'    <cat-image src="http://webcomponents.online/images/04.jpg">\n' +
+			'        <cat-text> Sample text </cat-text>\n' +
+			'        <cat-text> Another sample text </cat-text>\n' +
+			'    </cat-image>\n' +
+			'    <cat-image src="http://webcomponents.online/images/05.jpg">\n' +
+			'        <cat-text> Sample text </cat-text>\n' +
+			'        <cat-text> Another sample text </cat-text>\n' +
+			'    </cat-image>\n' +
 			'</cat-slider>';
 
-		connectComponentWithConfigPanel(componentName, styleObj, componentString);
+		connectComponentWithConfigPanel(componentName, styleObj, componentString, includes);
 		
 	</script>
 	
