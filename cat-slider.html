@@ -20,8 +20,6 @@
 <style>
     :host {
         display: block;
-        width: 700px;
-        height: 300px;
         position: relative;
     }
     * {
@@ -230,9 +228,13 @@ Polymer({
          */
         textTransitionDuration: { type: Number, value: 1 },        
         /**
+         * Transition delay, in seconds
+         */
+        textTransitionDelay:    { type: Number, value: 0 },
+        /**
          * Delay (in seconds) between multiple text appearances
          */
-        textTransitionDelay:    { type: Number, value: 0.3 },
+        delayInBetween:    { type: Number, value: 0.3 },
         /**
          * The horizontal position of the text.
          * Available options: random, center, left, right
@@ -301,15 +303,13 @@ Polymer({
         sliderShadowColor:        { type: String, value: 'rgba(0, 0, 0, 0.2)'}
     },
 
-    CatTextProperties: [
+    CatImageProperties: [
         'textTransitionType',
         'textTransitionDirection',
         'textTransitionFunction',
         'textTransitionDuration',
-        'slideOffset'
-    ],
-
-    CatImageProperties: [
+        'textTransitionDelay',
+        'slideOffset',
         'showEffectsOnHover',
         'disableKenBurns',
         'kenBurnsZoomDirection',
@@ -320,25 +320,36 @@ Polymer({
         'textPadding',
         'horizontalTextPosition',
         'verticalTextPosition',
-        'textTransitionDelay',
+        'delayInBetween',
         'textSpacing'
     ],
 
-    _applyBundledProperties: function(el) {
-        var i, len, key, dashedOriginal;
-        for (i = 0, len = this.CatImageProperties.length; i < len; i++) {
-            dashedOriginal = dashedLowercase(this.CatImageProperties[i]);
-            if (! el.hasAttribute(dashedOriginal) && this[this.CatImageProperties[i]] !== false) {
-                el.setAttribute(dashedOriginal, this[this.CatImageProperties[i]]);
+    // apply the bundled properties
+    // unless there are individual properties defined for a specific element
+    _getOriginal:function(str) {
+        if (str.indexOf(':') !== -1) {
+            return str.slice(0, str.indexOf(':'));
+        } else {
+            return str;
+        }
+    },
+    _getSpecific: function(str) {
+        if (str.indexOf(':') !== -1) {
+            return str.slice(str.indexOf(':') + 1, str.length);
+        } else {
+            return str;
+        }
+    },
+    _applyBundledProperties: function(el, PropertiesArray) {
+        var i, len, original, specific, dashedOriginal;
+        for (i = 0, len = PropertiesArray.length; i < len; i++) {
+            original = this._getOriginal(PropertiesArray[i]);
+            specific = this._getSpecific(PropertiesArray[i]);
+            dashedOriginal = dashedLowercase(original);
+            if (! el.hasAttribute(dashedOriginal) && this[specific] !== false) {
+                el.setAttribute(dashedOriginal, this[specific]);
             }
         }
-        for (i = 0, len = this.CatTextProperties.length; i < len; i++) {
-            dashedOriginal = dashedLowercase(this.CatTextProperties[i]);
-            if (! el.hasAttribute(dashedOriginal) && this[this.CatTextProperties[i]] !== false) {
-                el.setAttribute(dashedOriginal, this[this.CatTextProperties[i]]);
-            }
-        }
-        el.setAttribute('manual-mode', '');
     },
 
     _appendImageChildren: function() {
@@ -346,7 +357,8 @@ Polymer({
         this._lightDom = Polymer.dom(this).children;
 
         for (var i = 0; i < this._lightDom.length; i++) {
-            this._applyBundledProperties(this._lightDom[i]);
+            this._applyBundledProperties(this._lightDom[i], this.CatImageProperties);
+            this._lightDom[i].setAttribute('manual-mode', '');
             var li = document.createElement('li');
             li.appendChild(this._lightDom[i]);
             Polymer.dom(this.$.slider).appendChild(li);
@@ -387,11 +399,10 @@ Polymer({
     },
 
     _initialStyleSetup: function() {
-        this.computedStyles = {};
 
-        this.computedStyles.width = getComputedStyle(this).width;
-        this.computedStyles.height = getComputedStyle(this).height;
-        this.computedStyles.narrow = this.narrowedImagesWidth + 'px';
+        if (parseInt(getComputedStyle(this).height) === 0) {
+            this.style.height = '300px';
+        }
 
         this.customStyle['--cat-slider-bullet-color'] = this.bulletColor;
         this.customStyle['--cat-slider-bullet-selected-color'] = this.bulletSelectedColor;
@@ -490,8 +501,6 @@ Polymer({
 
         this._initialStyleSetup();
         this._attachListeners();
-
-        var self = this;
     },
 
     transitionToSlide: function(toSlide) {

@@ -152,6 +152,13 @@
             "type": "numeric-input",
             "min": 0,
             "max": 2,
+            "step": 0.1
+        }, {
+            "name": "Delay In Between",
+            "id": "delayInBetween",
+            "type": "numeric-input",
+            "min": 0,
+            "max": 2,
             "step": 0.1,
             "tip": "Delay between multiple text appearances"
         }, {
